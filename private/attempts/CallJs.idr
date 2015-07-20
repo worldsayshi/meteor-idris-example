@@ -17,5 +17,5 @@ retIt s = foreign FFI_JS "%0()" (JsFn (()->String) -> JS_IO String) (MkJsFn s)
 
 main : JS_IO ()
 main = do
-  s <- retIt retString -- "foo"
+  s <- retIt retString
   printIt s
