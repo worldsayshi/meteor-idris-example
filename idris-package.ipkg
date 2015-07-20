@@ -1,0 +1,6 @@
+package idrisPackage
+
+modules = Main
+	, SomeIdrisModule
+
+opts = "--codegen javascript -o idris-code.idrjs"
