@@ -40,9 +40,23 @@ runIt3 ty f =
     (JsFn (ty->()) -> JS_IO ())
     (MkJsFn (unsafePerformIO . f))
 
+%inline
+runIt4 : (ty : Type) ->
+  {auto fty : FTy FFI_JS [] (JsFn (ty -> ()) -> ty -> JS_IO ())} -> (ty->JS_IO ()) -> ty -> JS_IO ()
+runIt4 ty f arg =
+  foreign FFI_JS "%0(%1)"
+    (JsFn (ty->()) -> ty -> JS_IO ())
+    (MkJsFn (unsafePerformIO . f)) arg
+
 doEffect : ()->JS_IO ()
 doEffect _ = putStrLn "callback called"
+
+doEffect2 : String->JS_IO ()
+doEffect2 s = putStrLn s
+
 
 main : JS_IO ()
 main = do
   runIt3 () doEffect
+  runIt3 String doEffect2
+  runIt4 String doEffect2 "foo"
