@@ -1,16 +1,17 @@
-if (Meteor.isClient) {
-  Template.idrisTest.helpers({
-    someData: function () {
-        return someData;
-    }
-  });
+var idris_string = new ReactiveVar("no string yet");
 
-  Template.idrisTest.events({
-    'click button': function () {
-      // increment the counter when button is clicked
-      Session.set('counter', Session.get('counter') + 1);
-    }
-  });
+if (Meteor.isClient) {
+    Template.idrisTest.helpers({
+        someData: function () {
+            return idris_string.get();
+        }
+    });
+    Template.idrisTest.onCreated(function () {
+        var instance = this;
+        Meteor.call("idris_string",function (err, res) {
+            idris_string.set(res);
+        });
+    });
 }
 
 if (Meteor.isServer) {
@@ -18,7 +19,3 @@ if (Meteor.isServer) {
     // code to run on server at startup
   });
 }
-
-printIt = function (obj) {
-    console.log(obj);
-};

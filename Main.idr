@@ -1,29 +1,30 @@
 module Main
 
+import Meteor
+
 printIt : String -> JS_IO ()
 printIt s = foreign FFI_JS "console.log(%0)" (String -> JS_IO ()) s
 
-runIt : (()->JS_IO ()) -> JS_IO ()
-runIt f =
-  foreign FFI_JS ("console.log({"++name++":%0})")
-     (JsFn (()->()) -> JS_IO ()) (MkJsFn (unsafePerformIO . f))
 
+idris_string : () -> JS_IO String
+idris_string _ = do
+  putStrLn "returning idris string"
+  return "This is a string from Idris"
 
-meteor_method : String -> (() -> JS_IO ()) -> JS_IO ()
-meteor_method name method =
-  foreign FFI_JS ("console.log({"++name++":%0})")
-    (JsFn (()->()) -> JS_IO ()) (MkJsFn (unsafePerformIO . method))
+instance Cast String (Maybe Bool) where
+  cast "True" = Just True
+  cast "False"= Just False
+  cast _ = Nothing
 
-test_method : () -> JS_IO ()
-test_method _ = putStrLn "test_method called!"
+data Operation = NavDown | NavUp
 
-test_method2 : () -> JS_IO ()
-test_method2 _ = putStrLn "test_method2 called!"
+instance Cast String (Maybe Operation) where
+  cast "NavDown" = Just NavDown
+  cast "NavUp" = Just NavUp
+  cast _ = Nothing
 
 
 main : JS_IO ()
 main = do
-  printIt "Idris main method"
-  runIt test_method2
-  meteor_method "test_method" test_method
+  Meteor.method "idris_string" idris_string
   putStrLn "Idris main method finished!"
